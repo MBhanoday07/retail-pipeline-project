@@ -60,7 +60,7 @@ python cloud_function/main.py
 ```
 
 ## Resume Metrics Achieved
-- Processes 2,823+ records per run
+- Processes 9800 records per run
 - 100% bad data blocked from BigQuery via quality gate
 - ~70% query scan reduction via BigQuery partitioning
 - Zero data loss via raw file retention
