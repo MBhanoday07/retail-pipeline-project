@@ -31,21 +31,33 @@ def load_to_bigquery(df):
     table_ref = f"{PROJECT_ID}.{BQ_DATASET}.{BQ_RAW_TABLE}"
     print(f"\n📤 Loading {len(df)} rows to BigQuery...")
     print(f"   Table: {table_ref}")
+    
     job_config = bigquery.LoadJobConfig(
         write_disposition="WRITE_APPEND",
         autodetect=True,
+        
+        # Partition by ingestion date
+        time_partitioning=bigquery.TimePartitioning(
+            type_=bigquery.TimePartitioningType.DAY,
+            field="INGESTION_TIMESTAMP"
+        ),
+        
+        # Cluster by COUNTRY and PRODUCTLINE
+        clustering_fields=["COUNTRY", "PRODUCTLINE"]
     )
+    
     try:
         job = client.load_table_from_dataframe(
             df, table_ref, job_config=job_config
         )
         job.result()
-        print(f"✅ Successfully loaded {len(df)} rows to BigQuery!")
+        print(f"✅ Successfully loaded {len(df)} rows!")
+        print(f"   Partitioned by: INGESTION_TIMESTAMP (daily)")
+        print(f"   Clustered by  : COUNTRY, PRODUCTLINE")
         return True
     except Exception as e:
         print(f"❌ BigQuery load failed: {str(e)}")
         raise
-
 
 def validate_load(df):
     client = bigquery.Client(project=PROJECT_ID)
