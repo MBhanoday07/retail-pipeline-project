@@ -1,0 +1,12 @@
+# Credentials
+.env
+*.json
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Data
+data/
+*.csv
